@@ -145,6 +145,7 @@ function buildPdf(pdfFilename, chartFilename, callback) {
 		doc.text('Sports Report', 10, 90, { 'width':pageW-20, 'align':'center' });
 
 		doc.fontSize(10);
+    console.log("CONVERTING " + chartFilename);
 		doc.image(chartFilename, 100, 140, { 'fit':[400, 400] } )
 			 .rect(100, 140, 400, 400)
 			 .stroke()

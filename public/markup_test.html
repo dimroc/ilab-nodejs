@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;"/>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+  <title>iLab Charting</title>
+  <!-- iPad/iPhone specific css below, add after your main css >
+  <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+  -->
+  <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="stylesheets/ipad.css"
+        type="text/css"/>
+  <link rel="stylesheet" type="text/css" href="stylesheets/jquery.mobile-1.0b1.css" media="all">
+  <link rel="stylesheet" type="text/css" href="stylesheets/demo.css" media="all">
+
+  <!-- needed for a jquery mobile -->
+  <link rel="stylesheet" href="stylesheets/jquery.mobile-1.0b1.css"/>
+  <!-- If you application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+  <script type="text/javascript" charset="utf-8" src="javascripts/lib/phonegap.0.9.6.js"></script>
+  <script type="text/javascript" src="javascripts/lib/jquery-1.6.2.js"></script>
+
+  <script type="text/javascript" src="javascripts/lib/raphael/raphael.js"></script>
+  <script type="text/javascript" src="javascripts/lib/popup.js"></script>
+  <script type="text/javascript" src="javascripts/lib/raphael-analytics-demo.js"></script>
+  <script type="text/javascript" src="javascripts/lib/Stats.js"></script>
+
+  <style type="text/css" media="screen">
+    body {
+      /*background: #000;*/
+    }
+
+    .holder {
+      height: 500px;
+      margin: -125px 0 0 -400px;
+      width: 800px;
+      /*background: #000;*/
+    }
+  </style>
+
+  <!-- Has to be at the bottom -->
+  <script type="text/javascript" src="javascripts/lib/jquery.mobile-1.0b1.js"></script>
+
+
+</head>
+<body>
+<table id="data">
+  <tfoot>
+  <tr>
+    <th>1</th>
+    <th>2</th>
+    <th>3</th>
+    <th>4</th>
+    <th>5</th>
+    <th>6</th>
+    <th>7</th>
+    <th>8</th>
+    <th>9</th>
+    <th>10</th>
+    <th>11</th>
+    <th>12</th>
+    <th>13</th>
+    <th>14</th>
+    <th>15</th>
+    <th>16</th>
+    <th>17</th>
+    <th>18</th>
+    <th>19</th>
+    <th>19</th>
+    <th>20</th>
+    <th>22</th>
+    <th>23</th>
+    <th>24</th>
+    <th>25</th>
+    <th>26</th>
+    <th>27</th>
+    <th>28</th>
+    <th>29</th>
+    <th>30</th>
+    <th>31</th>
+  </tr>
+  </tfoot>
+  <tbody>
+  <tr>
+    <td>8</td>
+    <td>25</td>
+    <td>27</td>
+    <td>25</td>
+    <td>54</td>
+    <td>59</td>
+    <td>79</td>
+    <td>47</td>
+    <td>27</td>
+    <td>44</td>
+    <td>44</td>
+    <td>51</td>
+    <td>56</td>
+    <td>83</td>
+    <td>12</td>
+    <td>91</td>
+    <td>52</td>
+    <td>12</td>
+    <td>40</td>
+    <td>8</td>
+    <td>60</td>
+    <td>29</td>
+    <td>7</td>
+    <td>33</td>
+    <td>56</td>
+    <td>25</td>
+    <td>1</td>
+    <td>78</td>
+    <td>70</td>
+    <td>68</td>
+    <td>2</td>
+  </tr>
+  </tbody>
+</table>
+
+<div data-role="page" data-theme="a">
+  <div data-role="header">
+    <h1>Marking Up Charts and Saving Dynamic Visuals</h1>
+    <a href="javascript:save()" data-icon="check" class="ui-btn-right" data-theme="b">Save</a>
+  </div>
+  <div data-role="content">
+    <!-- what we will add for drawing lines -->
+    <script type="text/javascript">
+
+      $("div").live("pagecreate", function()
+      {
+        var url = $(this).jqmData("url");
+//        clear_chart();
+//        render_chart();
+      });
+
+      function adjust_coordinates(x, y)
+      {
+        var offset = $("#markupHolder").offset();
+        var leftbase = offset.left;
+        var topbase = offset.top;
+
+        var newx = x - leftbase;
+        var newy = y - topbase;
+
+        return { x: newx, y: newy };
+      }
+
+      var currentLine = null;
+      function redrawCurrentLine()
+      {
+        if (currentLine)
+          currentLine.remove();
+
+        var constructionString = "";
+        for (var i = 0; i < currentPoints.length; i++)
+        {
+          var p = currentPoints[i];
+          constructionString += p.type + p.x + " " + p.y;
+        }
+
+        currentLine = main_paper.path(constructionString);
+        currentLine.attr({stroke: "red", "stroke-width": 4});
+      }
+
+      function drawCircle(x, y)
+      {
+        var circle = main_paper.circle(x, y, 3);
+
+        // Sets the fill attribute of the circle to red (#f00)
+        circle.attr("fill", "white");
+
+        // Sets the stroke attribute of the circle to white
+        circle.attr("stroke", "#fff");
+      }
+
+      // free drawing
+      var isDraw = false;
+
+      function onInteractStart(e)
+      {
+        if (isDraw)
+        {
+          onInteractEnd(e)
+        }
+        else
+        {
+          var coordinates = adjust_coordinates(e.pageX, e.pageY);
+          var x = coordinates.x;
+          var y = coordinates.y;
+
+          currentPoints = [];
+          currentLine = null;
+
+          currentPoints.push({ type: "M", x: x, y: y });
+          drawCircle(x, y);
+          isDraw = true;
+        }
+      }
+
+      var currentPoints = [];
+      function onInteractMove(e)
+      {
+        if (isDraw == true)
+        {
+          var coordinates = adjust_coordinates(e.pageX, e.pageY);
+          var x = coordinates.x;
+          var y = coordinates.y;
+
+          currentPoints.push({ type: "L", x: x, y: y });
+          redrawCurrentLine();
+        }
+      }
+
+      function onInteractEnd(e)
+      {
+        var coordinates = adjust_coordinates(e.pageX, e.pageY);
+        var x = coordinates.x;
+        var y = coordinates.y;
+        drawCircle(x, y);
+        isDraw = false;
+      }
+
+      function touchStart(e)
+      {
+        var targetEvent = e.touches.item(0);
+        onInteractStart(targetEvent);
+
+        e.preventDefault();
+        return false;
+      }
+
+      function touchMove(e)
+      {
+        var targetEvent = e.touches.item(0);
+        onInteractMove(targetEvent);
+        e.preventDefault();
+        return false;
+      }
+
+      function touchEnd(e)
+      {
+//        $("#additional_information").text("touch end!");
+        // touches doesn't exist in the touchEnd event.
+        var p = currentPoints[currentPoints.length - 1];
+        if(p)
+        {
+          drawCircle(p.x, p.y);
+        }
+
+        isDraw = false;
+        e.preventDefault();
+        return false;
+      }
+
+    </script>
+    <h1>
+      Use your finger to add markup to the chart.
+      <br/>
+      <span id="additional_information"></span>
+    </h1>
+
+    <!--div id="holder" ></div-->
+    <div class="holder" id="markupHolder"
+         onmousedown="onInteractStart(event)" onmousemove="onInteractMove(event)"
+         ontouchmove="touchMove(event)" ontouchstart="touchStart(event)" ontouchend="touchEnd(event)">
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="800" height="600"><desc>Created with Raphaël</desc><defs></defs><path fill="#ffffff" stroke="#ffffff" d="M36.414,7.89H60.533L96.623,109.898H73.508L66.77799999999999,88.929H29.213L22.297,109.898H0L36.414,7.89ZM35.01,71.351H61.135L48.248,31.211L35.01,71.351Z" style="fill-opacity: 0.3; stroke-width: 1px; stroke-linecap: round; " fill-opacity="0.3" stroke-width="1" stroke-linecap="round"></path></svg>
+         </div>
+    <form id="pdfForm" method="post" action="/pdf" data-ajax="false">
+      <input id="svgInput" type="hidden" name="svg" value="">
+    </form>
+  </div>
+  <div data-role="footer" data-id="universal_footer" data-position="fixed">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="index.html" data-icon="star" data-transition="slide" data-ajax="false">Intro</a>
+        </li>
+        <li><a href="trace.html" data-icon="grid" data-transition="slide" data-ajax="false">Tracing</a>
+        </li>
+        <li><a href="#" data-icon="grid" data-transition="slide" data-ajax="false" class="ui-btn-active">Mark Up</a>
+        </li>
+        <li><a href="uiunittest.html" data-icon="grid" data-transition="slide" data-ajax="false">UI Unit Test</a>
+        </li>
+        <li><a href="conclusion.html" data-transition="slide" data-icon="info"
+            >Conclusion</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>
