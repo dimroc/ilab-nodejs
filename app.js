@@ -224,6 +224,8 @@ app.post('/pdf', function(req,res){
 		var svg = req.body.svg;
 		var cid = getNextChartId();
 
+  console.log("RECEIVED SVG: " + svg);
+
 //		_svgMap[cid] = svg;
 
 			svg2png(svg, function(pngBuffer) {
