@@ -300,5 +300,5 @@ app.get('/pdf3', function(req,res){
 */
 
 
-app.listen(port, host);
+app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
