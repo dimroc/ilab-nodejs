@@ -17,15 +17,15 @@ var app = module.exports = express.createServer();
 var host = process.env.VCAP_APP_HOST || 'localhost';
 var port = process.env.PORT || 3000;
 
-var tempfolder = __dirname + '/tmp';
+var tempfolder = './tmp';
 
 app.configure(function(){
-  app.set('views', __dirname + '/views');
+  app.set('views', './views');
   app.set('view engine', 'jade');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+  app.use(express.static('./public'));
 });
 
 app.configure('development', function(){
@@ -54,10 +54,10 @@ require('http').createServer(function (request, response) {
 // HELPERS
 
 function buildChartFilename(chartId) {
-		return tempfolder + '/_chart_'+chartId+'.png';
+		return tempfolder + '/chart_'+chartId+'.png';
 }
 function buildPdfFilename(id) {
-		return tempfolder + '/_report_'+id+'.pdf';
+		return tempfolder + '/report_'+id+'.pdf';
 }
 
 // Chart ID
@@ -229,14 +229,16 @@ app.post('/pdf', function(req,res){
 				else {
 
 					var chartFilename = buildChartFilename(cid);
+				 	console.log("Using chart file name: " + chartFilename);
 					fs.writeFile(chartFilename, pngBuffer, function() {
 
 							var pdfFilename = buildPdfFilename(cid);
+				 	    console.log("Using pdf file name: " + pdfFilename);
 							fs.unlink(pdfFilename);
 
 							buildPdf(pdfFilename, chartFilename, function() {
 							
-//				 				console.log("Sending response...");
+				 				console.log("Sending response...");
 								fs.unlink(chartFilename);
 
 								res.redirect('/pdf/'+cid);
