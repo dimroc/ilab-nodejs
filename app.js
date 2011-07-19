@@ -17,10 +17,11 @@ var app = module.exports = express.createServer();
 var host = process.env.VCAP_APP_HOST || 'localhost';
 var port = process.env.PORT || 3000;
 
-var tempfolder = '/tmp';
+var tempFolder = (port == 3000 ? __dirname+'/tmp' : '/tmp');
+var latestSvgFilename = tempFolder + '/_latest.svg';
 
 // Ensure tmp folder exists
-fs.mkdir(tempfolder, 0755);
+fs.mkdir(tempFolder, 0755);
 
 
 app.configure(function(){
@@ -58,10 +59,10 @@ require('http').createServer(function (request, response) {
 // HELPERS
 
 function buildChartFilename(chartId) {
-		return tempfolder + '/chart_'+chartId+'.png';
+		return tempFolder + '/chart_'+chartId+'.png';
 }
 function buildPdfFilename(id) {
-		return tempfolder + '/report_'+id+'.pdf';
+		return tempFolder + '/report_'+id+'.pdf';
 }
 
 // Chart ID
@@ -154,11 +155,6 @@ function buildPdf(pdfFilename, chartFilename, callback) {
 			callback();
 		});
 
-
-//		var out = doc.output();
-//		setTimeout( function() { callback(out); }, 2000 );
-
-//		callback(doc.output());
 }
 
 
@@ -169,41 +165,6 @@ function buildPdf(pdfFilename, chartFilename, callback) {
 //  res.send('<html><body><h2>iLab!</h2></body></html>');
 //});
 
-/*
-app.get('/pdf/:cid', function(req,res){
-
-		var cid = req.params.cid;
-		var svg = _svgMap[cid];
-		_svgMap[cid] = null;
-
-		svg2png(svg, function(pngBuffer) {
-			if (pngBuffer == null) {
-				res.send(500);
-			}
-			else {
-
-				var chartFilename = buildChartFilename(cid);
-				fs.writeFile(chartFilename, pngBuffer, function() {
-
-						var pdfFilename = tempfolder+'/_page.pdf';
-						fs.unlink(pdfFilename);
-
-						buildPdf(pdfFilename, chartFilename);
-
-						fs.unlink(chartFilename);
-
-						res.contentType('application/pdf');
-			 			res.sendfile(pdfFilename, function(err) {
-								fs.unlink(pdfFilename);
-								res.end();
-			 			});
-
-				});
-			}
-		});
-
-});
-*/
 
 app.get('/pdf/:id', function(req,res){
 
@@ -224,9 +185,7 @@ app.post('/pdf', function(req,res){
 		var svg = req.body.svg;
 		var cid = getNextChartId();
 
-  console.log("RECEIVED SVG: " + svg);
-
-//		_svgMap[cid] = svg;
+		fs.writeFile(latestSvgFilename, svg, 'utf8', function(err) {
 
 			svg2png(svg, function(pngBuffer) {
 				if (pngBuffer == null) {
@@ -254,12 +213,25 @@ app.post('/pdf', function(req,res){
 					});
 				}
 			});
-
+		});
 });
 
 
 app.get('/test', function(req,res){
-	res.render('pdf.jade', {layout:false});
+
+	fs.readFile(latestSvgFilename, function(err,data) {
+		
+			var svg;
+			if (err) {
+				svg = '';
+			} else {
+				svg = data;
+			}
+
+			res.render('pdf.jade', {layout:false, svg:svg});
+	
+	});
+
 });
 
 app.get('/test/chart', function(req,res) {
@@ -277,35 +249,6 @@ app.get('/test/chart', function(req,res) {
 		});
 
 });
-
-/*
-app.get('/pdf3', function(req,res){
-
-		var pdfFilename = tempfolder+'/_page.pdf';
-		fs.unlink(pdfFilename);
-
-		var url = 'http://'+host+':'+port+'/pdf/tmpl/'+'3';
-
-//		var html = '<html><body><div style="border:1px solid #000;"><img src="chart/3"></img></div></body></html>';
-
-		new PDF({url: url}).convertAs(pdfFilename, function(err, out) {
-//		new PDF({file: "/home/laurent/ilab/pdf.html"}).convertAs(pdfFilename, function(err, out) {
-//		new PDF({html: html}).convertAs(pdfFilename, function(err, out) {
-//		new PDF({url: 'http://localhost:3000/pdfc'}).convertAs(pdfFilename, function(err, out) {
-			if (err != null) {
-				console.log("ERROR:"+err);
-				res.send(500);
-			}
-			else {
-				res.contentType('application/pdf');
-   			res.sendfile(pdfFilename, function(err) {
-					fs.unlink(pdfFilename);
-   			});
-   		}
-		});
-
-});
-*/
 
 
 app.listen(port);
