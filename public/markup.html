@@ -263,6 +263,9 @@
     <div class="holder" id="markupHolder"
          onmousedown="onInteractStart(event)" onmousemove="onInteractMove(event)"
          ontouchmove="touchMove(event)" ontouchstart="touchStart(event)" ontouchend="touchEnd(event)"></div>
+    <form id="pdfForm" method="post" action="/pdf">
+      <input id="svgInput" type="hidden" name="svg" value="">
+    </form>
   </div>
   <div data-role="footer" data-id="universal_footer" data-position="fixed">
     <div data-role="navbar">

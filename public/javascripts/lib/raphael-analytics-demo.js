@@ -231,20 +231,23 @@ clear_chart = function()
 
 function save()
 {
-  var svgdata = { 'svg': $('#markupHolder').html() };
+  var svgData = $('#markupHolder').html();
+  $("#svgInput").val(svgData);
+  $("#pdfForm").submit();
+//  var svgdata = { 'svg': $('#markupHolder').html() };
   // Dispatch svg chart from client to back-end and have it rendered elsewhere.
-  $.ajax({
-    type: 'POST',
-    url: 'localhost:3000/pdf',
-    data: svgdata,
-    success: function(msg)
-    {
-      alert("Saved chart to pdf! " + msg);
-    },
-    error: function(msg)
-    {
-      alert("error: " + msg);
-    }
-  });
+//  $.ajax({
+//    type: 'POST',
+//    url: 'localhost:3000/pdf',
+//    data: svgdata,
+//    success: function(msg)
+//    {
+//      alert("Saved chart to pdf! " + msg);
+//    },
+//    error: function(msg)
+//    {
+//      alert("error: " + msg);
+//    }
+//  });
 }
 
