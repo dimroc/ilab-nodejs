@@ -247,6 +247,15 @@ app.get('/test/chart', function(req,res) {
 
 });
 
+app.get('/test/svg', function(req,res) {
+	if (latestSVG) {
+			res.send(latestSVG, { 'Content-Type': 'text/plain' });
+	}
+	else {
+		res.send("No SVG in memory!");
+	}
+});
+
 
 app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
