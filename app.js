@@ -18,8 +18,8 @@ var host = process.env.VCAP_APP_HOST || 'localhost';
 var port = process.env.PORT || 3000;
 
 var tempFolder = (port == 3000 ? __dirname+'/tmp' : '/tmp');
-//var latestSvgFilename = tempFolder + '/_latest.svg';
-var latestSVG = null;
+var latestSvgFilename = tempFolder + '/_latest.svg';
+//var latestSVG = null;
 
 // Ensure tmp folder exists
 fs.mkdir(tempFolder, 0755);
@@ -186,8 +186,8 @@ app.post('/pdf', function(req,res){
 		var svg = req.body.svg;
 		var cid = getNextChartId();
 
-		latestSVG = svg;
-//		fs.writeFile(latestSvgFilename, svg, 'utf8', function(err) {
+//		latestSVG = svg;
+		fs.writeFile(latestSvgFilename, svg, 'utf8', function(err) {
 
 			svg2png(svg, function(pngBuffer) {
 				if (pngBuffer == null) {
@@ -215,7 +215,7 @@ app.post('/pdf', function(req,res){
 					});
 				}
 			});
-//		});
+		});
 });
 
 
@@ -223,7 +223,7 @@ app.get('/test', function(req,res){
 
 //	fs.readFile(latestSvgFilename, function(err,data) {
 		
-			res.render('pdf.jade', {layout:false, svg:latestSVG});
+			res.render('pdf.jade', {layout:false, svg:''});
 	
 //	});
 
@@ -246,12 +246,28 @@ app.get('/test/chart', function(req,res) {
 });
 
 app.get('/test/svg', function(req,res) {
+
+	fs.readFile(latestSvgFilename, function(err,data) {
+		
+			if (err) {
+				res.send("Error reading SVG file: "+err, { 'Content-Type': 'text/plain' });
+			}
+			else {
+				res.send(data, { 'Content-Type': 'text/plain' });
+			}
+	
+	});
+
+
+/*
 	if (latestSVG) {
 			res.send(latestSVG, { 'Content-Type': 'text/plain' });
 	}
 	else {
 		res.send("No SVG in memory!");
 	}
+*/
+
 });
 
 
