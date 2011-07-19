@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;"/>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+  <title>iLab Charting</title>
+  <!-- iPad/iPhone specific css below, add after your main css >
+   <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+   <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+   -->
+  <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="stylesheets/ipad.css"
+        type="text/css"/>
+  <link rel="stylesheet" type="text/css" href="stylesheets/jquery.mobile-1.0b1.css" media="all">
+  <link rel="stylesheet" type="text/css" href="stylesheets/demo.css" media="all">
+
+  <!-- If you application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+  <script type="text/javascript" charset="utf-8" src="javascripts/lib/phonegap.0.9.6.js"></script>
+  <script type="text/javascript" src="javascripts/lib/jquery-1.6.2.js"></script>
+
+  <script type="text/javascript" src="javascripts/lib/raphael/raphael.js"></script>
+  <script type="text/javascript" src="javascripts/lib/popup.js"></script>
+
+  <script>
+     function BlockMove(event)
+     {
+      // Tell Safari not to move the window.
+      event.preventDefault() ;
+     }
+   </script>
+
+  <style type="text/css" media="screen">
+    body {
+      /*background: #000;*/
+    }
+  </style>
+
+  <!-- Has to be at the bottom -->
+  <script type="text/javascript" src="javascripts/lib/jquery.mobile-1.0b1.js"></script>
+
+</head>
+<body>
+
+<div data-role="page" data-theme="a">
+  <div data-role="header">
+    <h1>Conclusion</h1>
+  </div>
+  <div data-role="content">
+    <p>The limitations of this technology seem to be when dealing with math
+    intensive applications rather than the rendering of html5 elements. This is illustrated
+    with the struggling interpolation of the tracing sample contrasted against the
+    smooth results of the markup sample.</p>
+    <p>Abandoning Raphael for a lighter tablet friendlier solution to animation and interpolation
+    could have large returns on performance with animated html5 elements.</p>
+    <p><a href="http://jsxgraph.uni-bayreuth.de/wiki/index.php/Colorful_circles">A faster chart rendering library.</a></p>
+  </div>
+  <div data-role="footer" data-id="universal_footer" data-position="fixed">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="index.html" data-icon="star" data-transition="slide" data-direction="reverse" data-ajax="true">Intro</a>
+        </li>
+        <li><a href="trace.html" data-icon="grid" data-transition="slide" data-ajax="false">Tracing</a>
+        </li>
+        <li><a href="markup.html" data-icon="grid" data-transition="slide" data-ajax="false">Mark Up</a>
+        </li>
+        <li><a href="uiunittest.html" data-icon="grid" data-transition="slide" data-ajax="false">UI Unit Test</a>
+        </li>
+        <li><a href="#" data-transition="slide" data-icon="info" class="ui-btn-active"
+>Conclusion</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

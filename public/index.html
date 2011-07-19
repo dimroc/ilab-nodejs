@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;"/>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+  <title>iLab Charting</title>
+  <!-- iPad/iPhone specific css below, add after your main css >
+   <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+   <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+   -->
+  <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="stylesheets/ipad.css"
+        type="text/css"/>
+  <link rel="stylesheet" type="text/css" href="stylesheets/jquery.mobile-1.0b1.css" media="all">
+  <link rel="stylesheet" type="text/css" href="stylesheets/demo.css" media="all">
+
+  <!-- If you application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+  <script type="text/javascript" charset="utf-8" src="javascripts/lib/phonegap.0.9.6.js"></script>
+  <script type="text/javascript" src="javascripts/lib/jquery-1.6.2.js"></script>
+
+  <script type="text/javascript" src="javascripts/lib/raphael/raphael.js"></script>
+  <script type="text/javascript" src="javascripts/lib/popup.js"></script>
+  <script type="text/javascript" src="javascripts/lib/raphael-analytics-demo.js"></script>
+
+  // TODO: PLace every javascript file needed for the whole app here.
+
+  <script>
+    function BlockMove(event)
+    {
+      // Tell Safari not to move the window.
+      event.preventDefault();
+    }
+
+  </script>
+
+  <style type="text/css" media="screen">
+  </style>
+
+  <!-- Has to be at the bottom -->
+  <script type="text/javascript" src="javascripts/lib/jquery.mobile-1.0b1.js"></script>
+
+</head>
+<body ontouchmove="BlockMove(event);">
+
+<div data-role="page" data-theme="a">
+  <div data-role="header">
+    <h1>iLab - Interactive Charting with Web Technologies</h1>
+  </div>
+  <div data-role="content">
+    <h1>
+      Goal
+    </h1>
+    <p>To investigate interactive charting abilities and performance when using web technologies on tablets.</p>
+    <h2>
+      Technologies
+    </h2>
+    <p>
+      Javascript and the following libraries:
+      <ul>
+        <li>jQuery</li><li>jQuery Mobile</li><li>Raphael</li><li>PhoneGap</li>
+      </ul>
+    </p>
+  </div>
+
+  <div data-role="footer" data-id="universal_footer" data-position="fixed">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#" data-icon="star" data-transition="slide" class="ui-btn-active" data-ajax="false">Intro</a>
+        </li>
+        <li><a href="trace.html" data-icon="grid" data-transition="slide" data-ajax="false">Tracing</a>
+        </li>
+        <li><a href="markup.html" data-icon="grid" data-transition="slide" data-ajax="false">Mark Up</a>
+        </li>
+        <li><a href="uiunittest.html" data-icon="grid" data-transition="slide" data-ajax="false">UI Unit Tests</a>
+        </li>
+        <li><a href="conclusion.html" data-transition="slide" data-icon="info"
+            >Conclusion</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

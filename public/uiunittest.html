@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;"/>
+
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+  <title>iLab Charting</title>
+  <!-- iPad/iPhone specific css below, add after your main css >
+   <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+   <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+   -->
+  <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="stylesheets/ipad.css"
+        type="text/css"/>
+  <link rel="stylesheet" type="text/css" href="stylesheets/jquery.mobile-1.0b1.css" media="all">
+  <link rel="stylesheet" href="javascripts/lib/qunit/qunit.css" type="text/css" media="screen">
+
+  <!-- If you application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+  <script type="text/javascript" charset="utf-8" src="javascripts/lib/phonegap.0.9.6.js"></script>
+  <script type="text/javascript" src="javascripts/lib/jquery-1.6.2.js"></script>
+  <script type="text/javascript" src="javascripts/lib/qunit/qunit.js"></script>
+  <script type="text/javascript" src="qunit-sample/customtest.js"></script>
+  <script type="text/javascript" src="javascripts/lib/raphael/raphael.js"></script>
+
+  <script type="text/javascript">
+    PAPER = new Object();
+
+    $().ready(function()
+    {
+      var width = 800, height = 400;
+      PAPER = new Raphael("holder", width, height);
+      PAPER.circles = new Array();
+      PAPER.rectangles = new Array();
+      PAPER.ellipses = new Array();
+      PAPER.paths = new Array();
+      PAPER.texts = new Array();
+
+      PAPER.circles.push(PAPER.circle(100, 100, 80));
+
+      for (var i = 0; i < 5; i += 1)
+      {
+        var multiplier = i * 5;
+        PAPER.circles.push(PAPER.circle(250 + (2 * multiplier), 100 + multiplier, 50 - multiplier));
+      }
+
+      var rectangle = PAPER.rectangles.push(PAPER.rect(200, 200, 250, 100));
+      var ellipse = PAPER.ellipses.push(PAPER.ellipse(200, 400, 100, 50));
+
+      var tetronimo = PAPER.path("M 250 250 l 0 -50 l -50 0 l 0 -50 l -50 0 l 0 50 l -50 0 l 0 50 z");
+      PAPER.paths.push(tetronimo);
+      tetronimo.attr(
+          {
+            stroke: 'none',
+            fill: 'blue'
+          }
+      );
+
+      tetronimo.animate({
+        path: "M 250 250 l 0 -50 l -50 0 l 0 -50 l -100 0 l 0 50 l 50 0 l 0 50 z"
+      }, 5000, 'elastic');
+
+      PAPER.texts.push(PAPER.text(250, 450, 'Bye Bye Circle!'));
+    });
+  </script>
+
+  <!-- Has to be at the bottom -->
+  <script type="text/javascript" src="javascripts/lib/jquery.mobile-1.0b1.js"></script>
+</head>
+<body>
+
+<div data-role="page">
+  <div data-role="header"><h1 id="header">UI Unit Testing</h1></div>
+
+  <!-- Place your content and unit test work here -->
+  <div data-role="content">
+
+    <div id="holder"></div>
+
+    <!--<script type="text/javascript" src="test.js"></script>-->
+    <!--<script type="text/javascript" src="same.js"></script>-->
+
+    <h1 id="qunit-header">QUnit Test Suite</h1>
+
+    <h2 id="qunit-banner"></h2>
+
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup</div>
+  </div>
+
+  <div data-role="footer" data-id="universal_footer" data-position="fixed">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="index.html" data-icon="star" data-transition="slide" data-ajax="false" data-direction="reverse">Intro</a>
+        </li>
+        <li><a href="trace.html" data-icon="grid" data-transition="slide" data-ajax="false">Tracing</a>
+        </li>
+        <li><a href="markup.html" data-icon="grid" data-transition="slide" data-ajax="false">Mark Up</a>
+        </li>
+        <li><a href="#" data-icon="grid" data-transition="slide" data-ajax="false" class="ui-btn-active">UI Unit Tests</a>
+        </li>
+        <li><a href="conclusion.html" data-transition="slide" data-icon="info"
+            >Conclusion</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
