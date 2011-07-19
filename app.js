@@ -161,9 +161,9 @@ function buildPdf(pdfFilename, chartFilename, callback) {
 
 // Routes
 
-app.get('/', function(req, res){
-  res.send('<html><body><h2>iLab!</h2></body></html>');
-});
+//app.get('/', function(req, res){
+//  res.send('<html><body><h2>iLab!</h2></body></html>');
+//});
 
 /*
 app.get('/pdf/:cid', function(req,res){
