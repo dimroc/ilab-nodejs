@@ -19,6 +19,10 @@ var port = process.env.PORT || 3000;
 
 var tempfolder = '/tmp';
 
+// Ensure tmp folder exists
+fs.mkdir(tempfolder, 0755);
+
+
 app.configure(function(){
   app.set('views', './views');
   app.set('view engine', 'jade');
