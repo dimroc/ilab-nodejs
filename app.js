@@ -18,7 +18,8 @@ var host = process.env.VCAP_APP_HOST || 'localhost';
 var port = process.env.PORT || 3000;
 
 var tempFolder = (port == 3000 ? __dirname+'/tmp' : '/tmp');
-var latestSvgFilename = tempFolder + '/_latest.svg';
+//var latestSvgFilename = tempFolder + '/_latest.svg';
+var latestSVG = null;
 
 // Ensure tmp folder exists
 fs.mkdir(tempFolder, 0755);
@@ -185,7 +186,8 @@ app.post('/pdf', function(req,res){
 		var svg = req.body.svg;
 		var cid = getNextChartId();
 
-		fs.writeFile(latestSvgFilename, svg, 'utf8', function(err) {
+		latestSVG = svg;
+//		fs.writeFile(latestSvgFilename, svg, 'utf8', function(err) {
 
 			svg2png(svg, function(pngBuffer) {
 				if (pngBuffer == null) {
@@ -213,24 +215,17 @@ app.post('/pdf', function(req,res){
 					});
 				}
 			});
-		});
+//		});
 });
 
 
 app.get('/test', function(req,res){
 
-	fs.readFile(latestSvgFilename, function(err,data) {
+//	fs.readFile(latestSvgFilename, function(err,data) {
 		
-			var svg;
-			if (err) {
-				svg = '';
-			} else {
-				svg = data;
-			}
-
-			res.render('pdf.jade', {layout:false, svg:svg});
+			res.render('pdf.jade', {layout:false, svg:latestSVG});
 	
-	});
+//	});
 
 });
 
