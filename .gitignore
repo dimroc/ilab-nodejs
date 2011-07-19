@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+.bundle
+db/*.sqlite3
+log/*.log
+tmp/
+.DS_Store
+.idea/
+.swp
+

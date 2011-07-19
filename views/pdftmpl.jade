@@ -1,0 +1,16 @@
+html
+	head
+		title PDF OUTPUT
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	body
+		#header
+			ul
+				li.left iLab Report 2011
+				li.right Page 1
+		#content
+			h1 Sports Report
+			
+			div.chart
+				img.chart(src='data:image/png;base64,#{chart_data}')
+				.caption Nascar vs Footbal comparison
+
