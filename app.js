@@ -15,7 +15,7 @@ var app = module.exports = express.createServer();
 // Configuration
 
 var host = process.env.VCAP_APP_HOST || 'localhost';
-var port = Number(process.env.VCAP_APP_PORT || 3000);
+var port = process.env.PORT || 3000;
 
 var tempfolder = __dirname + '/tmp';
 
