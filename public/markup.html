@@ -43,7 +43,7 @@
 
 
 </head>
-<body>
+<body onload="render_chart();">
 <table id="data">
   <tfoot>
   <tr>
@@ -129,8 +129,8 @@
       $("div").live("pagecreate", function()
       {
         var url = $(this).jqmData("url");
-        clear_chart();
-        render_chart();
+//        clear_chart();
+//        render_chart();
       });
 
       function adjust_coordinates(x, y)
