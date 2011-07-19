@@ -2,23 +2,22 @@
 /**
  * Module dependencies.
  */
+require('coffee-script');
 
 var express = require('express'),
 		fs = require('fs'),
-		chart = require('./chart'),
-		PDF = require("node-wkhtml").pdf(),
-		http = require('http');
-
+		http = require('http'),
+//		nodestatic = require('node-static'),
+		PDFDocument = require('pdfkit');
 
 var app = module.exports = express.createServer();
+
+// Configuration
 
 var host = process.env.VCAP_APP_HOST || 'localhost';
 var port = Number(process.env.VCAP_APP_PORT || 3000);
 
 var tempfolder = __dirname + '/tmp';
-
-
-// Configuration
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -37,9 +36,28 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
+/*
+// STATIC FILE SERVER
+
+var staticServer = new nodestatic.Server('./public');
+
+require('http').createServer(function (request, response) {
+    request.addListener('end', function () {
+        //
+        // Serve files!
+        //
+        file.serve(request, response);
+    });
+}).listen(8080);
+*/
+
+// HELPERS
 
 function buildChartFilename(chartId) {
 		return tempfolder + '/_chart_'+chartId+'.png';
+}
+function buildPdfFilename(id) {
+		return tempfolder + '/_report_'+id+'.pdf';
 }
 
 // Chart ID
@@ -79,11 +97,8 @@ function svg2png(svg, callback) {
 		console.log('Converting SVG ('+svg.length+' bytes) to PNG');
 
 		var creq = http.request(options, function(cres) {
-//				console.log('STATUS: ' + cres.statusCode);
-//				console.log('hrd ' + cres.headers);
 
 				var contentLen = parseInt(cres.headers['content-length']);
-//				console.log('hrd CL: ' + contentLen);
 
 				var pngBuffer = new Buffer(contentLen);
 				var pngBufferPos = 0;
@@ -92,13 +107,9 @@ function svg2png(svg, callback) {
 				cres.on('data', function (chunk) {
 					chunk.copy(pngBuffer, pngBufferPos);
 					pngBufferPos += chunk.length;
-//					console.log("pngBufferPos = "+pngBufferPos);
-//					console.log('BODY: written '+chunk.length+' bytes to buffer');
 				});
 				
 				cres.on('end', function() {
-//					console.log('done');
-//					res.send(pngBuffer, {'Content-Type':'image/png'}, 200);
 						callback(pngBuffer);
 				});
 		});
@@ -108,10 +119,44 @@ function svg2png(svg, callback) {
 			callback(null);
 		});
 
-		// write data to request body
 		creq.write(escapedSvg);
 		creq.end();
 }
+
+function buildPdf(pdfFilename, chartFilename, callback) {
+
+		var doc = new PDFDocument();
+
+		var pageW = 612;
+		var pageH = 792;
+
+		doc.fontSize(10);
+		doc.text('iLab Report 2011', 50,30);
+		doc.text('Page 1', 50, 30, { 'width':pageW-100, 'align':'right' });
+		doc.moveTo(48,46).lineTo(pageW-48,46).stroke();
+
+		doc.fontSize(22);
+		doc.text('Sports Report', 10, 90, { 'width':pageW-20, 'align':'center' });
+
+		doc.fontSize(10);
+		doc.image(chartFilename, 100, 140, { 'fit':[400, 400] } )
+			 .rect(100, 140, 400, 400)
+			 .stroke()
+			 .text('Nascar vs Footbal comparison', 100, 550, { 'width':400, 'align':'center' });
+
+
+		doc.write(pdfFilename, function() {
+			console.log("PDF written to file");
+			callback();
+		});
+
+
+//		var out = doc.output();
+//		setTimeout( function() { callback(out); }, 2000 );
+
+//		callback(doc.output());
+}
+
 
 
 // Routes
@@ -120,156 +165,52 @@ app.get('/', function(req, res){
   res.send('<html><body><h2>iLab!</h2></body></html>');
 });
 
-
 /*
-app.get('/chart-test', function(req,res){
-
-		var options = {
-		      chart: {
-		          width: 300,
-		          height: 300,
-		          defaultSeriesType: 'bar'
-		      },
-		      legend: {
-		          enabled: false
-		      },
-		      title: {
-		          text: 'Highcharts rendered by Node!'
-		      },
-		      series: [{
-		          data: [ 1, 2, 3, 4, 5, 6 ]
-		      }]
-		  };
-
-		var chartFilename = __dirname+'/__chart.png';
-
-		chart.exportToPng(options, chartFilename, function(err, data) {
-		    if (err) {
- 		      res.send(500);
-    		} else {
-    			res.contentType('image/png');
-    			res.sendfile(chartFilename, function(err) {
-    				//..
-    				fs.unlink(chartFilename);
-    			});
-				}
-		});
-	
-});
-*/
-
-/*
-app.get('/chart/:id', function(req,res){
-
-	var chartFilename = buildChartFilename(req.params.id);
-	console.log("Serving chart image: "+chartFilename);
-	fs.stat(chartFilename, function(err,stats){
-		if (err != null)
-			res.send(500);
-		else {
- 			res.contentType('image/png');
- 			res.sendfile(chartFilename, function(err) {
- 				//console.log("Serving chart png error:"+err);
-			});
-		}
-	});
-
-});
-*/
-
-/*
-app.get('/chart/:id', function(req,res){
-
-	var chartId = req.params.id;
-	var svg = _svgMap[chartId];
-	if (svg) {
-	
-		// done with this one, remove it from map
-		_svgMap[chartId] = null;
-
-		// temp chart png filename
-		var chartFilename = buildChartFilename(chartId);
-
-		// export our SVG to PNG
-		chart.exportSvgToPng(svg, chartFilename, function(err) {
-		    if (err) {
- 		      res.send(500);
-    		} else {
-    			res.contentType('image/png');
-    			res.sendfile(chartFilename, function(err) {
-    				fs.unlink(chartFilename);
-    			});
-				}
-		});
-	
-	}
-	else {
-		res.send(500);
-	}
-
-});
-*/
-
-function renderPdfTemplate(res, chartFilename, callback) {
-		fs.readFile(chartFilename, function(err,data){
-			var buf = new Buffer(data, 'binary').toString('base64');
-
-			res.render('pdftmpl', {layout:false, chart_data:buf});
-
-			if (callback)
-				callback();
-		});
-}
-
-app.get('/pdf/tmpl/:id', function(req,res){
-
-	var cid = req.params.id;
-	var svg = _svgMap[cid];
-	if (svg) {
-	
-		// done with this one, remove it from map
-		_svgMap[cid] = null;
-
-
-		if (svg == 'test') {
-			renderPdfTemplate(res, tempfolder+'/test.png');
-		}
-		else {
-
-			svg2png(svg, function(pngBuffer) {
-				if (pngBuffer == null)
-					res.send(500);
-				else
-					res.render('pdftmpl', {layout:false, chart_data:pngBuffer.toString('base64')});
-			});
-
-		}
-	}
-	else {
-		res.send(500);
-	}
-
-});
-
 app.get('/pdf/:cid', function(req,res){
 
 		var cid = req.params.cid;
-		
-		var pdfFilename = tempfolder+'/_page.pdf';
-		fs.unlink(pdfFilename);
+		var svg = _svgMap[cid];
+		_svgMap[cid] = null;
 
-		var url = 'http://'+host+':'+port+'/pdf/tmpl/'+cid;
-		new PDF({url: url}).convertAs(pdfFilename, function(err, out) {
-			if (err != null) {
-				console.log("ERROR:"+err);
+		svg2png(svg, function(pngBuffer) {
+			if (pngBuffer == null) {
 				res.send(500);
 			}
 			else {
-				res.contentType('application/pdf');
-   			res.sendfile(pdfFilename, function(err) {
-					fs.unlink(pdfFilename);
-   			});
-   		}
+
+				var chartFilename = buildChartFilename(cid);
+				fs.writeFile(chartFilename, pngBuffer, function() {
+
+						var pdfFilename = tempfolder+'/_page.pdf';
+						fs.unlink(pdfFilename);
+
+						buildPdf(pdfFilename, chartFilename);
+
+						fs.unlink(chartFilename);
+
+						res.contentType('application/pdf');
+			 			res.sendfile(pdfFilename, function(err) {
+								fs.unlink(pdfFilename);
+								res.end();
+			 			});
+
+				});
+			}
+		});
+
+});
+*/
+
+app.get('/pdf/:id', function(req,res){
+
+		var id = req.params.id;
+
+		var pdfFilename = buildPdfFilename(id);
+
+		res.contentType('application/pdf');
+		res.sendfile(pdfFilename, function(err) {
+				console.log("sent response: err="+err);
+				fs.unlink(pdfFilename);
 		});
 
 });
@@ -279,9 +220,33 @@ app.post('/pdf', function(req,res){
 		var svg = req.body.svg;
 		var cid = getNextChartId();
 
-		_svgMap[cid] = svg;
+//		_svgMap[cid] = svg;
 
-		res.redirect('/pdf/'+cid);
+			svg2png(svg, function(pngBuffer) {
+				if (pngBuffer == null) {
+					res.send(500);
+				}
+				else {
+
+					var chartFilename = buildChartFilename(cid);
+					fs.writeFile(chartFilename, pngBuffer, function() {
+
+							var pdfFilename = buildPdfFilename(cid);
+							fs.unlink(pdfFilename);
+
+							buildPdf(pdfFilename, chartFilename, function() {
+							
+//				 				console.log("Sending response...");
+								fs.unlink(chartFilename);
+
+								res.redirect('/pdf/'+cid);
+
+							});
+
+					});
+				}
+			});
+
 });
 
 
