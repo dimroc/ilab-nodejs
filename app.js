@@ -187,6 +187,7 @@ app.post('/pdf', function(req,res){
 		var cid = getNextChartId();
 
 		latestSVG = svg;
+    console.log("RECEIVED SVG: " + svg);
 //		fs.writeFile(latestSvgFilename, svg, 'utf8', function(err) {
 
 			svg2png(svg, function(pngBuffer) {
