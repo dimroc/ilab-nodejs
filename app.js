@@ -17,7 +17,7 @@ var app = module.exports = express.createServer();
 var host = process.env.VCAP_APP_HOST || 'localhost';
 var port = process.env.PORT || 3000;
 
-var tempfolder = './tmp';
+var tempfolder = '/tmp';
 
 app.configure(function(){
   app.set('views', './views');
