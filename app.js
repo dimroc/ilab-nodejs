@@ -145,6 +145,7 @@ function buildPdf(pdfFilename, chartFilename, callback) {
 		doc.text('Sports Report', 10, 90, { 'width':pageW-20, 'align':'center' });
 
 		doc.fontSize(10);
+    console.log("CONVERTING " + chartFilename);
 		doc.image(chartFilename, 100, 140, { 'fit':[400, 400] } )
 			 .rect(100, 140, 400, 400)
 			 .stroke()
@@ -187,6 +188,7 @@ app.post('/pdf', function(req,res){
 		var cid = getNextChartId();
 
 //		latestSVG = svg;
+    console.log("RECEIVED SVG: " + svg);
 		fs.writeFile(latestSvgFilename, svg, 'utf8', function(err) {
 
 			svg2png(svg, function(pngBuffer) {
@@ -257,16 +259,6 @@ app.get('/test/svg', function(req,res) {
 			}
 	
 	});
-
-
-/*
-	if (latestSVG) {
-			res.send(latestSVG, { 'Content-Type': 'text/plain' });
-	}
-	else {
-		res.send("No SVG in memory!");
-	}
-*/
 
 });
 
